@@ -34,13 +34,7 @@ export class ProductInput {
             return new Error('Input date is invalid');
         }
       
-        if (ProductInput.isBeforeCommonEra(dateOrder)) {
-            return new Error('Order date cannot be before the common era');
-        }
-        if (ProductInput.isBeforeCommonEra(dateInput)) {
-            return new Error('Input date cannot be before the common era');
-        }
-       
+      
         if (ProductInput.calendarDay(dateInput) < ProductInput.calendarDay(dateOrder)) {
             return new Error('Input date cannot be before order date');
         }
@@ -105,14 +99,5 @@ export class ProductInput {
         return calendarDate.getTime();
     }
 
-   
-    private static isBeforeCommonEra(date: Date): boolean {
-        const era = new Intl.DateTimeFormat('en-US', {
-            timeZone: 'America/Sao_Paulo',
-            calendar: 'gregory',
-            era: 'short',
-            year: 'numeric',
-        }).formatToParts(date).find(part => part.type === 'era')!.value;
-        return era === 'BC';
-    }
+
 }

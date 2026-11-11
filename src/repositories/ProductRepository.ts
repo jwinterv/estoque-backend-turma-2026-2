@@ -3,7 +3,12 @@ import { InfrastructureError } from '../InfrastructureError';
 import Database from "better-sqlite3";
 import type { SqliteConnection } from './SqliteConnection';
 
-export class ProductRepository {
+export interface ProductRepositoryInterface {
+    findByBarcode(barcode: string): Product | null | InfrastructureError;
+    create(product: Product): void | InfrastructureError;
+}
+
+export class ProductRepository implements ProductRepositoryInterface {
 
     private connection: SqliteConnection;
 
