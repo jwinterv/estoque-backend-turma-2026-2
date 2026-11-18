@@ -22,7 +22,7 @@ export class CreateProductUsecase {
             return new Error("Product already exists");
         }
         if (product instanceof InfrastructureError) {
-            return new InfrastructureError("Database error");
+            return new InfrastructureError(product.message);
         }
 
         const newProduct = Product.create(barcode, name);
@@ -33,7 +33,7 @@ export class CreateProductUsecase {
 
         const result = this.productRepository.create(newProduct);
         if (result instanceof InfrastructureError) {
-            return new Error("Database error");
+            return new InfrastructureError(result.message);
         }
         
         return {

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>0/14</span>
             </div>
         
             
@@ -79,9 +79,24 @@
 <a name='L14'></a><a href='#L14'>14</a>
 <a name='L15'></a><a href='#L15'>15</a>
 <a name='L16'></a><a href='#L16'>16</a>
-<a name='L17'></a><a href='#L17'>17</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -89,36 +104,45 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import readlineSync from "readline-sync";
-import { Product } from "./entities/Product";
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { SqliteConnection } from './repositories/SqliteConnection';
+import { ProductRepository } from './repositories/ProductRepository';
+import { CreateProductUsecase } from './usecases/CreateProductUsecase';
+import readlineSync from "readline-sync";
+import { InfrastructureError } from './InfrastructureError';
+&nbsp;
+const sqliteConnection = <span class="cstat-no" title="statement not covered" >new SqliteConnection("db/estoque.sqlite");</span>
+const productRepository = <span class="cstat-no" title="statement not covered" >new ProductRepository(sqliteConnection);</span>
+const createProductUsecase = <span class="cstat-no" title="statement not covered" >new CreateProductUsecase(productRepository);</span>
 &nbsp;
 const barcode = <span class="cstat-no" title="statement not covered" >readlineSync.question("Digite o código de barras do produto: ");</span>
 const name = <span class="cstat-no" title="statement not covered" >readlineSync.question("Digite o nome do produto: ");</span>
 &nbsp;
-const product = <span class="cstat-no" title="statement not covered" >Product.create(barcode, name);</span>
+const result = <span class="cstat-no" title="statement not covered" >createProductUsecase.execute(barcode, name);</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >if (product instanceof Error) {</span>
-<span class="cstat-no" title="statement not covered" >    console.error(product.message);</span>
+<span class="cstat-no" title="statement not covered" >if (result instanceof InfrastructureError) {</span>
+<span class="cstat-no" title="statement not covered" >  console.error("Erro na infraestrutura:", result.message);</span>
+} else <span class="cstat-no" title="statement not covered" >if (result instanceof Error) {</span>
+<span class="cstat-no" title="statement not covered" >  console.error("Erro de regra de negócio: ", result.message);</span>
 } else {
-<span class="cstat-no" title="statement not covered" >    console.log("Produto criado com sucesso!");</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`Código de barras: ${product.getBarcode()}`);</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`Nome: ${product.getName()}`);</span>
-<span class="cstat-no" title="statement not covered" >    console.log(`Quantidade em estoque: ${product.getQuantityInStock()}`);</span>
-}
-&nbsp;</pre></td></tr></table></pre>
+<span class="cstat-no" title="statement not covered" >    console.log("Produto criado com sucesso:");</span>
+<span class="cstat-no" title="statement not covered" >    console.log("Código de barras: ", result.barcode);</span>
+<span class="cstat-no" title="statement not covered" >    console.log("Nome: ", result.name);</span>
+<span class="cstat-no" title="statement not covered" >    console.log("Quantidade em estoque: ", result.quantityInStock);</span>
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-10-27T22:28:48.775Z
+                at 2026-11-17T23:07:04.314Z
             </div>
         <script src="../prettify.js"></script>
         <script>
