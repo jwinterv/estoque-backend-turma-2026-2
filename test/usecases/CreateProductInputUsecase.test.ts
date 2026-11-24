@@ -9,7 +9,6 @@ describe("CreateProductInputUsecase tests", () => {
     test("should create a new product input successfully", () => {
         const barcode = "1234567890123";
         const dateOrder = new Date("2026-10-01T10:00:00.000Z");
-        const dateInput = new Date("2026-10-05T10:00:00.000Z");
         const quantity = 15;
 
         let createdBarcode = "";
@@ -35,19 +34,22 @@ describe("CreateProductInputUsecase tests", () => {
         const mockProductInputRepository = new MockProductInputRepository();
         const usecase = new CreateProductInputUsecase(mockProductRepository, mockProductInputRepository);
 
-        const result = usecase.execute(barcode, dateOrder, dateInput, quantity);
+        const result = usecase.execute(barcode, dateOrder, quantity);
 
         expect(createdBarcode).toBe(barcode);
         expect(createdQuantity).toBe(quantity);
         expect(createdOrderDate).toEqual(dateOrder);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             barcode: barcode,
             dateOrder: dateOrder,
-            dateInput: dateInput,
             quantity: quantity,
             quantityInStock: 25
         });
+
+        if (!(result instanceof Error)) {
+            expect(result.dateInput).toBeInstanceOf(Date);
+        }
     });
 
     test("should return an error if the product does not exist", () => {
@@ -70,7 +72,6 @@ describe("CreateProductInputUsecase tests", () => {
         const result = usecase.execute(
             "1234567890123",
             new Date("2026-10-01T10:00:00.000Z"),
-            new Date("2026-10-05T10:00:00.000Z"),
             15
         );
 
@@ -100,7 +101,6 @@ describe("CreateProductInputUsecase tests", () => {
         const result = usecase.execute(
             "1234567890123",
             new Date("2026-10-01T10:00:00.000Z"),
-            new Date("2026-10-05T10:00:00.000Z"),
             15
         );
 
@@ -127,10 +127,11 @@ describe("CreateProductInputUsecase tests", () => {
             new MockProductInputRepository()
         );
 
+        const futureDateOrder = new Date(Date.now() + 86400000); // amanhã (posterior ao dateInput atual)
+
         const result = usecase.execute(
             "1234567890123",
-            new Date("2026-10-05T10:00:00.000Z"),
-            new Date("2026-10-01T10:00:00.000Z"), // dateInput anterior à dateOrder
+            futureDateOrder,
             15
         );
 
@@ -162,7 +163,6 @@ describe("CreateProductInputUsecase tests", () => {
         const result = usecase.execute(
             "1234567890123",
             new Date("2026-10-01T10:00:00.000Z"),
-            new Date("2026-10-05T10:00:00.000Z"),
             15
         );
 

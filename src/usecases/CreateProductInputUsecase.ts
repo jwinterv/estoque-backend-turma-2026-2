@@ -28,7 +28,6 @@ export class CreateProductInputUsecase {
     public execute(
         barcode: string,
         dateOrder: Date,
-        dateInput: Date,
         quantity: number
     ): CreateProductInputUsecaseOutput | Error {
         const product = this.productRepository.findByBarcode(barcode);
@@ -41,6 +40,7 @@ export class CreateProductInputUsecase {
             return new Error("Product not found");
         }
 
+        const dateInput = new Date();
         const productInput = ProductInput.create(product, dateOrder, dateInput, quantity);
 
         if (productInput instanceof Error) {
