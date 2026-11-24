@@ -61,7 +61,8 @@ describe ('ProductInputRepository', () => {
             const creationResult = repository.create(barcode, quantityToAdd, new Date("2026-01-10T00:00:00Z"));
 
             expect(creationResult).toBeInstanceOf(InfrastructureError);
-            
+            expect(creationResult).toMatchObject({ message: "Database error" });
+
             expect(database.prepare(
                 "SELECT quantity_in_stock FROM products WHERE barcode = ?"
                 ).get(barcode)).toMatchObject({ quantity_in_stock: quantity }); 
@@ -85,11 +86,31 @@ describe ('ProductInputRepository', () => {
             const creationResult = repository.create(barcode, quantityToAdd, new Date("2026-01-10T00:00:00Z"));
 
             expect(creationResult).toBeInstanceOf(InfrastructureError);
+            expect(creationResult).toMatchObject({ message: "Database error" });
 
             expect(database.prepare(
                 "SELECT COUNT(*) as count FROM product_input"
             ).get()).toMatchObject({ count: 0 });
-        }finally {
+        } finally {
+            database.close();
+        }
+    });
+
+    test("should return an InfrastructureError when the product does not exist even with foreign keys disabled", () => {
+        const connection = new SqliteConnection(':memory:');
+        const database = connection.getDatabase();
+        database.pragma("foreign_keys = OFF");
+
+        try {
+            const repository = new ProductInputRepository(connection);
+            const result = repository.create('nao-existe', 5, new Date("2026-01-10T00:00:00Z"));
+
+            expect(result).toBeInstanceOf(InfrastructureError);
+
+            expect(database.prepare(
+                "SELECT COUNT(*) as count FROM product_input"
+            ).get()).toMatchObject({ count: 0 });
+        } finally {
             database.close();
         }
     });
